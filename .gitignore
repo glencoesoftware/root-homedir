@@ -1,0 +1,5 @@
+.*history
+.lesshst
+! .ssh/authorized_keys
+! .ssh/config
+.viminfo
