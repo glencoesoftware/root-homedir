@@ -3,3 +3,6 @@
 ! .ssh/authorized_keys
 ! .ssh/config
 .viminfo
+.gem
+.rnd
+StackScript
