@@ -64,12 +64,13 @@ function puppet_client() {
   # set hosts alias for puppetmaster
   # if not set will use 'puppet' via dns.
   if [ -n "$PUPPET_MASTER" ]; then
-    puppet --color=false resource host puppet ip=$PUPPET_MASTER 
+    puppet resource --color=false host puppet ip=$PUPPET_MASTER 
   fi
   # run puppet once to get cert
-  puppet --color=false agent --waitforcert 2 --no-daemonize --verbose --onetime
+  puppet agent --color=false --waitforcert 2 --no-daemonize --verbose --onetime
   # service and start
-  chkconfig puppet on && service puppet start
+  chkconfig puppet on
+  service puppet status || service puppet start
 }
 
 function masterless_puppet() {
@@ -215,10 +216,10 @@ function bootstrap_rpm() {
   os_version=$(rpm -q --queryformat="%{VERSION}" $release_package)
   case $os_version in
     6)
-      yum --color=never -y --quiet install --nogpgcheck http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-5.noarch.rpm
+      yum --color=never -y --quiet install --nogpgcheck http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-5.noarch.rpm &> /dev/null
     ;;
     5)
-      yum --color=never -y --quiet install --nogpgcheck install http://dl.fedoraproject.org/pub/epel/5/i386/epel-release-5-4.noarch.rpm
+      yum --color=never -y --quiet install --nogpgcheck install http://dl.fedoraproject.org/pub/epel/5/i386/epel-release-5-4.noarch.rpm &> /dev/null
     ;;
     *)
       echo "unsupported distro version $os_version for $DISTRO"
