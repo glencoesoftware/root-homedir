@@ -54,13 +54,18 @@ function puppet_set_roles() {
   done
 }
 
-function external_puppet_master() {
+function puppet_client() {
+  # set branch if not set
+  PUPPET_BRANCH=${PUPPET_BRANCH:-master}
   # setup config
-  puppet_config_repo
+  wget --quiet https://raw.github.com/glencoesoftware/puppet-configs/$PUPPET_BRANCH/puppet-client.conf -O /etc/puppet/puppet.conf
   # set roles
   puppet_set_roles
   # set hosts alias for puppetmaster
-  puppet --color=false resource host puppet ip=$PUPPET_MASTER 
+  # if not set will use 'puppet' via dns.
+  if [ -n "$PUPPET_MASTER" ]; then
+    puppet --color=false resource host puppet ip=$PUPPET_MASTER 
+  fi
   # run puppet once to get cert
   puppet --color=false agent --waitforcert 2 --no-daemonize --verbose --onetime
   # service and start
@@ -83,8 +88,6 @@ function masterless_puppet() {
 function self_puppet_master() {
   # install basic puppet server
   puppet resource package puppet-server ensure=installed
-  # since we are master we talk to ourselves, always
-  perl -p -i -e 's/$/ puppet/ if /^127.0.0.1/' /etc/hosts
   # standard config
   puppet_config_repo
   # external modules
@@ -93,6 +96,12 @@ function self_puppet_master() {
   puppet_set_roles
   # start puppetmaster and run agent against ourselves
   /sbin/service puppetmaster start
+  # since we are master we talk to ourselves, always
+  if [ -z "$PUPPET_MASTER" ]; then
+    perl -p -i -e 's/$/ puppet/ if /^127.0.0.1/' /etc/hosts
+  else
+    puppet --color=false resource host puppet ip=$PUPPET_MASTER 
+  fi
   puppet agent --test --color=false |tee /var/log/puppet_agent.log
   chkconfig puppetmaster on
   service puppetmaster start
@@ -167,7 +176,7 @@ function puppet_rpm() {
       masterless_puppet
       ;;
     client)
-      external_puppet_master
+      puppet_client
       ;;
     master)
       self_puppet_master
