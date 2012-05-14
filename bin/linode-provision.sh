@@ -53,11 +53,12 @@ function external_puppet_master() {
   # set roles
   puppet_set_roles
   # set hosts alias for puppetmaster
-  puppet --color=false resource host puppet ip=$PUPPET_MASTER 
+  puppet resource --color=false host puppet ip=$PUPPET_MASTER 
   # run puppet once to get cert
-  puppet --color=false agent --waitforcert 2 --no-daemonize --verbose --onetime
+  puppet agent --color=false --waitforcert 2 --no-daemonize --verbose --onetime
   # service and start
-  chkconfig puppet on && service puppet start
+  chkconfig puppet on
+  server puppet status || service puppet start
 }
 
 function masterless_puppet() {
@@ -68,9 +69,9 @@ function masterless_puppet() {
   # set roles
   puppet_set_roles
   # run once
-  puppet --color=false apply --logdest syslog --verbose /etc/puppet/manifests/site.pp
+  puppet apply --color=false --logdest syslog --verbose /etc/puppet/manifests/site.pp
   # cron run in
-  puppet --color=false resource cron puppetrun command='puppet apply --logdest syslog /etc/puppet/manifests/site.pp' minute='*/30'
+  puppet resource --color=false cron puppetrun command='puppet apply --logdest syslog /etc/puppet/manifests/site.pp' minute='*/30'
 }
 
 function self_puppet_master() {
@@ -136,9 +137,9 @@ function puppet_rpm() {
   else
     # for fedora assume rhel5-ish
     if [ -f /etc/fedora-release ]; then
-      yum --color=never -y --quiet install http://yum.puppetlabs.com/el/5/products/x86_64/puppetlabs-release-5-1.noarch.rpm
+      yum --color=never -y --quiet install http://yum.puppetlabs.com/el/5/products/x86_64/puppetlabs-release-5-1.noarch.rpm &> /dev/null
     else
-      yum --color=never -y --quiet install http://yum.puppetlabs.com/el/6/products/x86_64/puppetlabs-release-6-1.noarch.rpm
+      yum --color=never -y --quiet install http://yum.puppetlabs.com/el/6/products/x86_64/puppetlabs-release-6-1.noarch.rpm &> /dev/null
     fi
   fi
 
@@ -199,10 +200,10 @@ function bootstrap_rpm() {
   os_version=$(rpm -q --queryformat="%{VERSION}" $release_package)
   case $os_version in
     6)
-      yum --color=never -y --quiet install --nogpgcheck http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-5.noarch.rpm
+      yum --color=never -y --quiet install --nogpgcheck http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-5.noarch.rpm &> /dev/null
     ;;
     5)
-      yum --color=never -y --quiet install --nogpgcheck install http://dl.fedoraproject.org/pub/epel/5/i386/epel-release-5-4.noarch.rpm
+      yum --color=never -y --quiet install --nogpgcheck install http://dl.fedoraproject.org/pub/epel/5/i386/epel-release-5-4.noarch.rpm &> /dev/null
     ;;
     *)
       echo "unsupported distro version $os_version for $DISTRO"
@@ -216,8 +217,8 @@ function bootstrap_rpm() {
   yum --color=never -y --quiet install pam_ldap authconfig nss-pam-ldapd
 
   # prompt commands for screen
-  echo 'echo -ne "\033k${USER}@${HOSTNAME%%.*}:${PWD/#$HOME/~}\033\\";history -a' >> /etc/sysconfig/bash-prompt-screen
-  chmod +x /etc/sysconfig/bash-prompt-screen
+  # echo 'echo -ne "\033k${USER}@${HOSTNAME%%.*}:${PWD/#$HOME/~}\033\\";history -a' >> /etc/sysconfig/bash-prompt-screen
+  # chmod +x /etc/sysconfig/bash-prompt-screen
 
   # setup authentication
   authconfig \

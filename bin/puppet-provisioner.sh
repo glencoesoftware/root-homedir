@@ -232,8 +232,8 @@ function bootstrap_rpm() {
   yum --color=never -y --quiet install yum-plugin-protect-packages yum-plugin-security yum-plugin-verify yum-plugin-versionlock yum-plugin-ps
 
   # prompt commands for screen
-  echo 'echo -ne "\033k${USER}@${HOSTNAME%%.*}:${PWD/#$HOME/~}\033\\";history -a' >> /etc/sysconfig/bash-prompt-screen
-  chmod +x /etc/sysconfig/bash-prompt-screen
+  # echo 'echo -ne "\033k${USER}@${HOSTNAME%%.*}:${PWD/#$HOME/~}\033\\";history -a' >> /etc/sysconfig/bash-prompt-screen
+  # chmod +x /etc/sysconfig/bash-prompt-screen
 
   # setup puppet
   case $PUPPET_ENV in
