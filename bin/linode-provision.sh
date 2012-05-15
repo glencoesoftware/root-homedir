@@ -58,7 +58,7 @@ function external_puppet_master() {
   puppet agent --color=false --waitforcert 2 --no-daemonize --verbose --onetime
   # service and start
   chkconfig puppet on
-  server puppet status || service puppet start
+  service puppet status || service puppet start
 }
 
 function masterless_puppet() {
@@ -234,7 +234,7 @@ function bootstrap_rpm() {
     --enablemkhomedir \
     --disablecache \
     --enableldapstarttls \
-    --ldaploadcacert=http://www.glencoesoftware.com/bootstrap-helpers/ldap-cert.pem \
+    --ldaploadcacert=http://sloth.glencoesoftware.com/bootstrap-helpers/ldap-cert.pem \
     --updateall
 
   # setup access.conf
