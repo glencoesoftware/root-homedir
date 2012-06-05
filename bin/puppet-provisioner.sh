@@ -159,7 +159,7 @@ function puppet_rpm() {
     fi
   fi
 
-  yum --color=never -y --quiet install puppet facter rubygems
+  yum --color=never -y --quiet install puppet facter rubygems wget
 
   # fix broken linode virtualization detection
   release=$( uname -r )
