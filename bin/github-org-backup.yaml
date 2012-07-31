@@ -1,0 +1,11 @@
+:backup_dir: /tmp/my-ghb-backup
+
+:orgs:
+  :glencoesoftware:
+    :user: xxxxx
+    :pass: yyyyy
+    #:included_repos:
+      #- rup-video
+    :excluded_repos:
+      - openmicroscopy
+
