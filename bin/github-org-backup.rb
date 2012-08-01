@@ -10,7 +10,7 @@ require 'open-uri'
 
 begin
   API = 'https://api.github.com'
-  config_file = ARGV.shift || File.basename($0).gsub(File.extname($0), '.yaml')
+  config_file = ARGV.shift || $0.gsub(File.extname($0), '.yaml')
 
   DEBUG = nil
 
@@ -69,7 +69,7 @@ begin
   def api_call(uri)
     uri = uri =~ /^\// ? API + uri : API + '/' + uri
     puts "fetching #{uri}" if DEBUG
-    return JSON.load(open(uri, :http_basic_authentication => [@@api_user, @@api_pass])) or raise
+    return JSON.load(open(uri, :http_basic_authentication => [@@api_user, @@api_pass]))
   end
 
   # each repository in org
