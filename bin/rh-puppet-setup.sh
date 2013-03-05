@@ -39,7 +39,7 @@ function clone_config_repo() {
 }
 
 function install_puppet_cronjob() {
-  puppet resource cron puppet-run-standalone ensure=present user=root minute=30 command="${puppet_confdir}/run-standalone"
+  puppet resource cron puppet-run-standalone ensure=present user=root minute='*/30' command="${puppet_confdir}/run-standalone"
 }
 
 arch=$(arch)
