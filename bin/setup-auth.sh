@@ -1,4 +1,6 @@
 #!/bin/bash
+LDAP_SERVER=${1:-ldap.glencoesoftware.com}
+LDAP_CERT_PATH=${2:-http://sloth.glencoesoftware.com/bootstrap-helpers/ldap-cert.pem}
 
 # install 'extra' packages
 yum --color=never -y --quiet install bash-completion lsof git-core screen
@@ -15,7 +17,7 @@ authconfig \
   --enableshadow \
   --enablemd5 \
   --enableldap \
-  --ldapserver=ldap.glencoesoftware.com \
+  --ldapserver=${LDAP_SERVER} \
   --enableldaptls \
   --ldapbasedn='dc=glencoesoftware,dc=com' \
   --enablelocauthorize \
@@ -23,7 +25,7 @@ authconfig \
   --enablemkhomedir \
   --disablecache \
   --enableldapstarttls \
-  --ldaploadcacert=http://sloth.glencoesoftware.com/bootstrap-helpers/ldap-cert.pem \
+  --ldaploadcacert=${LDAP_CERT_PATH} \
   --updateall
 
 # setup access.conf
